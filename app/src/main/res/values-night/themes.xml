@@ -1,0 +1,6 @@
+<!-- Dark variant of the window theme, so launch doesn't flash white in dark mode. -->
+<resources>
+    <style name="Theme.ThingSpot" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/window_dark</item>
+    </style>
+</resources>

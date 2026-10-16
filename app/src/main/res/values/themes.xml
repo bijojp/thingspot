@@ -1,0 +1,6 @@
+<!-- Minimal platform theme for the window. Compose supplies the actual UI and colours. -->
+<resources>
+    <style name="Theme.ThingSpot" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_light</item>
+    </style>
+</resources>

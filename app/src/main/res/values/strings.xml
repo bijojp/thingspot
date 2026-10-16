@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name" translatable="false">ThingSpot</string>
+    <string name="tagline">Where did I put it?</string>
+    <string name="build_status">%1$s build · Pro %2$s</string>
+    <string name="pro_unlocked">unlocked</string>
+    <string name="pro_locked">locked</string>
+</resources>

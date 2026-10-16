@@ -1,0 +1,3 @@
+# GPL-3.0-or-later with an extra permission for Google Play libraries
+
+The app is licensed GPL-3.0-or-later, so anyone who distributes a modified copy must publish their source. This deters closed-source, ad-filled copies of a free app sold on Play. The Play build needs Google's proprietary billing library for the Pro unlock, and linking it would otherwise breach the GPL for contributors' code. So the licence adds a GPLv3 section 7 extra permission that allows linking with Google Play libraries in the Play build only; the F-Droid build contains no proprietary code. Apache-2.0 and MIT were rejected because they allow closed copies. Relicensing later requires every contributor's consent, so this decision is effectively permanent.

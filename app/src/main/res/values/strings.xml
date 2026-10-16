@@ -1,7 +1,143 @@
 <resources>
     <string name="app_name" translatable="false">ThingSpot</string>
-    <string name="tagline">Where did I put it?</string>
+
+    <!-- Tabs -->
+    <string name="tab_search">Search</string>
+    <string name="tab_places">Places</string>
+    <string name="tab_items">Items</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Common actions and fields -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_back">Back</string>
+    <string name="action_more">More options</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_add_item">Add Item</string>
+    <string name="action_add_place">Add Place</string>
+    <string name="action_add_place_inside">Place inside</string>
+    <string name="action_choose_place">Choose a Place</string>
+    <string name="field_name">Name</string>
+    <string name="field_icon">Icon</string>
+    <string name="field_colour">Colour</string>
+    <string name="field_place">Where is it?</string>
+    <string name="field_category_optional">Category (optional)</string>
+    <string name="field_notes_optional">Notes (optional)</string>
+
+    <!-- Confirmations -->
+    <string name="msg_place_added">Place added</string>
+    <string name="msg_starter_added">Starter Places added</string>
+    <string name="msg_saved">Saved</string>
+    <string name="msg_moved">Moved</string>
+    <string name="msg_place_deleted">Place deleted</string>
+    <string name="msg_item_added">Item added</string>
+    <string name="msg_item_deleted">Item deleted</string>
+    <string name="msg_category_deleted">Category deleted</string>
+    <string name="msg_failed">That didn’t work. Nothing was changed.</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search your things</string>
+    <string name="search_recent">Recently added</string>
+    <string name="search_no_items_title">Nothing recorded yet</string>
+    <string name="search_no_items_body">Add your first Item with the button below.</string>
+    <string name="search_no_match">Nothing matches “%1$s”</string>
+
+    <!-- First launch -->
+    <string name="first_run_title">Start with your Places</string>
+    <string name="first_run_body">Places are wherever things are kept: rooms, shelves, drawers, boxes, bags. Places can sit inside other Places, and every Item lives in one.</string>
+    <string name="first_run_starter">Add starter Places</string>
+    <string name="first_run_starter_detail">Home, with Bedroom, Kitchen, Living room and Garage inside. Rename or delete any of them later.</string>
+    <string name="first_run_own">Add my own Place</string>
+    <string name="starter_home">Home</string>
+    <string name="starter_bedroom">Bedroom</string>
+    <string name="starter_kitchen">Kitchen</string>
+    <string name="starter_living_room">Living room</string>
+    <string name="starter_garage">Garage</string>
+
+    <!-- Places -->
+    <string name="places_title">Places</string>
+    <string name="place_new">New Place</string>
+    <string name="place_edit">Edit Place</string>
+    <string name="place_name_hint">e.g. Kitchen shelf</string>
+    <string name="place_section_places">Places inside</string>
+    <string name="place_section_items">Items here</string>
+    <string name="place_no_items">No Items here yet</string>
+    <string name="place_action_edit">Rename or change icon</string>
+    <string name="place_action_move">Move</string>
+    <string name="place_action_delete">Delete</string>
+    <string name="place_move_title">Move “%1$s” into…</string>
+    <string name="place_delete_title">Delete “%1$s”?</string>
+    <string name="place_delete_empty">It’s empty, so nothing else changes.</string>
+    <string name="place_delete_pick_title">Move its Items to…</string>
+    <plurals name="place_delete_places_to_parent">
+        <item quantity="one">%1$d Place inside it moves up to %2$s.</item>
+        <item quantity="other">%1$d Places inside it move up to %2$s.</item>
+    </plurals>
+    <plurals name="place_delete_places_to_top">
+        <item quantity="one">%1$d Place inside it becomes a top-level Place.</item>
+        <item quantity="other">%1$d Places inside it become top-level Places.</item>
+    </plurals>
+    <plurals name="place_delete_items_to_parent">
+        <item quantity="one">%1$d Item moves to %2$s.</item>
+        <item quantity="other">%1$d Items move to %2$s.</item>
+    </plurals>
+    <plurals name="place_delete_items_choose">
+        <item quantity="one">%1$d Item is here. Choose where it goes:</item>
+        <item quantity="other">%1$d Items are here. Choose where they go:</item>
+    </plurals>
+    <plurals name="place_delete_blocked">
+        <item quantity="one">%1$d Item is here, and there’s no other Place to move it to. Add another Place first.</item>
+        <item quantity="other">%1$d Items are here, and there’s no other Place to move them to. Add another Place first.</item>
+    </plurals>
+
+    <!-- Place picker -->
+    <string name="picker_filter_hint">Filter Places</string>
+    <string name="picker_top_level">Top level</string>
+    <string name="picker_top_level_hint">Not inside any other Place</string>
+
+    <!-- Items -->
+    <string name="items_title">Items</string>
+    <string name="items_filter_all">All</string>
+    <string name="items_empty_title">No Items yet</string>
+    <string name="items_empty_body">Items are the things you want to find again.</string>
+    <string name="items_empty_category">No Items in %1$s</string>
+    <string name="item_new">New Item</string>
+    <string name="item_edit">Edit Item</string>
+    <string name="item_name_hint">e.g. Passport, USB-C cable</string>
+    <string name="item_notes_hint">Anything that helps you find it</string>
+    <string name="item_error_name">Give it a name</string>
+    <string name="item_error_place">Choose where it is</string>
+    <string name="item_pick_place_title">Where is it?</string>
+    <string name="item_delete">Delete Item</string>
+    <string name="item_delete_title">Delete “%1$s”?</string>
+    <plurals name="item_count">
+        <item quantity="one">%1$d Item</item>
+        <item quantity="other">%1$d Items</item>
+    </plurals>
+
+    <!-- Categories -->
+    <string name="category_new">New Category</string>
+    <string name="category_edit">Edit Category</string>
+    <string name="category_none">None</string>
+    <string name="category_name_hint">e.g. Documents, Electronics</string>
+    <string name="category_delete">Delete Category</string>
+    <string name="category_delete_title">Delete “%1$s”?</string>
+    <plurals name="category_delete_body">
+        <item quantity="one">%1$d Item loses this Category. It stays where it is.</item>
+        <item quantity="other">%1$d Items lose this Category. They stay where they are.</item>
+    </plurals>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_categories">Categories</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">ThingSpot %1$s</string>
     <string name="build_status">%1$s build · Pro %2$s</string>
     <string name="pro_unlocked">unlocked</string>
     <string name="pro_locked">locked</string>
+    <string name="settings_privacy_title">Your inventory stays on this phone</string>
+    <string name="settings_privacy_body">No account, no cloud, no ads, no tracking. The app has no internet access.</string>
+    <string name="settings_licence_title">Free and open source</string>
+    <string name="settings_licence_body">GPL-3.0-or-later</string>
 </resources>

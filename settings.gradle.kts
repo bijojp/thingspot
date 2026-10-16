@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 rootProject.name = "thingspot"
 include(":app")
 include(":core:domain")
+include(":core:data")

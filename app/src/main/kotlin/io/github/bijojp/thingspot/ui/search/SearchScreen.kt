@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,24 +36,31 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.bijojp.thingspot.R
 import io.github.bijojp.thingspot.domain.SearchResult
+import io.github.bijojp.thingspot.ui.BackupsViewModel
 import io.github.bijojp.thingspot.ui.InventoryViewModel
 import io.github.bijojp.thingspot.ui.ItemEditorRoute
 import io.github.bijojp.thingspot.ui.Navigator
 import io.github.bijojp.thingspot.ui.NewPlace
 import io.github.bijojp.thingspot.ui.PlaceRoute
+import io.github.bijojp.thingspot.ui.components.BackupBanner
 import io.github.bijojp.thingspot.ui.components.EmptyHint
 import io.github.bijojp.thingspot.ui.components.ItemRow
 import io.github.bijojp.thingspot.ui.components.PlaceEditorDialog
 import io.github.bijojp.thingspot.ui.components.PlaceRow
 import io.github.bijojp.thingspot.ui.components.SectionHeader
 import io.github.bijojp.thingspot.ui.components.TabScaffold
+import io.github.bijojp.thingspot.ui.components.rememberBackupFilePicker
+import io.github.bijojp.thingspot.ui.components.rememberBackupFolderPicker
 
 private const val RECENT_LIMIT = 15
 
 /** The home screen. Search is the product; when the box is empty, recently added Items show. */
 @Composable
-fun SearchScreen(viewModel: InventoryViewModel, nav: Navigator) {
+fun SearchScreen(viewModel: InventoryViewModel, backups: BackupsViewModel, nav: Navigator) {
     val inventory = viewModel.inventory.collectAsStateWithLifecycle().value ?: return
+    val backupStatus by backups.status.collectAsStateWithLifecycle()
+    val pickBackupFolder = rememberBackupFolderPicker(backups)
+    val pickBackupFile = rememberBackupFilePicker(backups)
     var query by rememberSaveable { mutableStateOf("") }
     var addingPlace by rememberSaveable { mutableStateOf(false) }
     val results = remember(inventory, query) { inventory.search(query) }
@@ -89,11 +97,17 @@ fun SearchScreen(viewModel: InventoryViewModel, nav: Navigator) {
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
                 )
             }
+            if (backupStatus.needsAttention && inventory.items.isNotEmpty()) {
+                item(key = "backup-banner") {
+                    BackupBanner(backupStatus, onSetUp = pickBackupFolder, onBackUpNow = { backups.backUpNow() })
+                }
+            }
             when {
                 inventory.places.isEmpty() -> item(key = "first-run") {
                     FirstRunCard(
                         onStarter = { viewModel.addStarterPlaces(starter) },
                         onOwnPlace = { addingPlace = true },
+                        onRestore = pickBackupFile,
                     )
                 }
                 query.isBlank() -> {
@@ -166,7 +180,7 @@ fun starterPlaces() = NewPlace(
 
 /** Shown until the first Place exists: Items need somewhere to live. */
 @Composable
-fun FirstRunCard(onStarter: () -> Unit, onOwnPlace: () -> Unit) {
+fun FirstRunCard(onStarter: () -> Unit, onOwnPlace: () -> Unit, onRestore: () -> Unit) {
     ElevatedCard(Modifier.fillMaxWidth().padding(16.dp)) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(stringResource(R.string.first_run_title), style = MaterialTheme.typography.titleLarge)
@@ -181,6 +195,9 @@ fun FirstRunCard(onStarter: () -> Unit, onOwnPlace: () -> Unit) {
             )
             OutlinedButton(onClick = onOwnPlace, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.first_run_own))
+            }
+            TextButton(onClick = onRestore, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.first_run_restore))
             }
         }
     }

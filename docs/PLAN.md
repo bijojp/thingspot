@@ -36,7 +36,7 @@ Vocabulary (Place, Item, Category, Label, Backup, Export, Pro) is defined in [`C
 | Search | Home screen. Matches Item names and notes, Place names and Category names. Ignores case and accents. Every result shows its full path (Home → Garage → Toolbox). "Recently added" list when the search box is empty. |
 | Photos | One per Item and one per Place. Taken with the camera or picked from the gallery. Compressed on save. |
 | Labels (Pro on Play) | Print sheets of QR Labels as a PDF (A4 or Letter): for chosen Places, or blank. Each Label also shows a short human-readable code. A Place can have several Labels. In-app scanner: a linked Label opens its Place; a blank or unknown Label offers "new Place" or "link to an existing Place". |
-| Backups | **Automatic daily** Backup (only if anything changed) to `Documents/ThingSpot/`, keeping the last 7. "Back up now" and **"Share backup"** (Quick Share, USB, email). **Optional password** encrypts the Backup file, with a clear warning that a forgotten password means a lost Backup. **Restore** replaces everything, after automatically saving the current data first. A visible "last backup" status, plus a warning when backups are failing. |
+| Backups | **Automatic daily** Backup (only if anything changed) to a `ThingSpot` folder inside a folder the user picks once (Documents suggested), keeping the last 7. "Back up now" and **"Share backup"** (Quick Share, USB, email). **Optional password** encrypts the Backup file, with a clear warning that a forgotten password means a lost Backup. **Restore** replaces everything, after automatically saving the current data first. A visible "last backup" status, plus a warning when backups are failing. |
 | Export | Spreadsheet (CSV) of Items with their full Place path, Category and notes. |
 | First launch | "Restore from a backup file" or "Start fresh", plus an optional one-tap set of starter Places (Home → Bedroom, Kitchen, Living room, Garage). |
 | Look and feel | Material 3 with ThingSpot's own brand theme, light and dark. Dynamic colour as an optional setting. English only. |
@@ -95,8 +95,7 @@ Android-only for now, in Kotlin with Jetpack Compose. The domain and data code d
 - **The zip:** contains `manifest.json` (format version, app version, created-at), `data.json` and `photos/`.
 - **With a password:** the whole zip is wrapped in AES-256-GCM, using a key derived from the password with PBKDF2-SHA256 (600k iterations) and a random salt. The header records the format version.
 - **Restore:** reads current and older format versions.
-- **Writing:** backups go to `Documents/ThingSpot/` through MediaStore (no storage permission needed), and restore uses the system file picker.
-- **Known caveat:** after a reinstall, the app can't delete older backups it created before. Confirm the rotation approach (MediaStore vs a folder grant chosen once) during the first week.
+- **Writing:** the user picks a folder once with the system folder picker (Documents suggested); ThingSpot keeps a lasting grant to it and writes into a `ThingSpot` subfolder. This needs no storage permission on any Android version, and keeping the last 7 still works after a reinstall (the user re-picks the folder). Restore uses the system file picker. Format details: [`docs/backup-format.md`](backup-format.md).
 
 **Build and release (ADR 0003):**
 - `fdroid` and `play` product flavours.

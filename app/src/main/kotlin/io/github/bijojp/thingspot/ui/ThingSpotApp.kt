@@ -10,8 +10,10 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import kotlinx.coroutines.flow.merge
 import io.github.bijojp.thingspot.domain.ItemId
 import io.github.bijojp.thingspot.domain.PlaceId
+import io.github.bijojp.thingspot.ui.components.BackupEffects
 import io.github.bijojp.thingspot.ui.components.LocalPhotoFiles
 import io.github.bijojp.thingspot.ui.items.ItemEditorScreen
 import io.github.bijojp.thingspot.ui.items.ItemsScreen
@@ -22,14 +24,14 @@ import io.github.bijojp.thingspot.ui.settings.SettingsScreen
 val LocalSnackbarHostState = staticCompositionLocalOf { SnackbarHostState() }
 
 @Composable
-fun ThingSpotApp(viewModel: InventoryViewModel) {
+fun ThingSpotApp(viewModel: InventoryViewModel, backups: BackupsViewModel) {
     val backStack = rememberNavBackStack(SearchRoute)
     val nav = remember(backStack) { Navigator(backStack) }
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
 
-    LaunchedEffect(viewModel, resources) {
-        viewModel.messages.collect { message ->
+    LaunchedEffect(viewModel, backups, resources) {
+        merge(viewModel.messages, backups.messages).collect { message ->
             snackbar.currentSnackbarData?.dismiss()
             snackbar.showSnackbar(resources.getString(message))
         }
@@ -43,14 +45,15 @@ fun ThingSpotApp(viewModel: InventoryViewModel) {
             backStack = backStack,
             onBack = nav::back,
             entryProvider = entryProvider {
-                entry<SearchRoute> { SearchScreen(viewModel, nav) }
-                entry<PlaceRoute> { route -> PlaceScreen(route.placeId?.let(::PlaceId), viewModel, nav) }
+                entry<SearchRoute> { SearchScreen(viewModel, backups, nav) }
+                entry<PlaceRoute> { route -> PlaceScreen(route.placeId?.let(::PlaceId), viewModel, backups, nav) }
                 entry<ItemsRoute> { ItemsScreen(viewModel, nav) }
-                entry<SettingsRoute> { SettingsScreen(viewModel, nav) }
+                entry<SettingsRoute> { SettingsScreen(viewModel, backups, nav) }
                 entry<ItemEditorRoute> { route ->
                     ItemEditorScreen(route.itemId?.let(::ItemId), route.placeId?.let(::PlaceId), viewModel, nav)
                 }
             },
         )
+        BackupEffects(backups)
     }
 }

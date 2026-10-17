@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import io.github.bijojp.thingspot.backup.DailyBackupWorker
+import io.github.bijojp.thingspot.ui.BackupsViewModel
 import io.github.bijojp.thingspot.ui.InventoryViewModel
 import io.github.bijojp.thingspot.ui.ThingSpotApp
 import io.github.bijojp.thingspot.ui.theme.ThingSpotTheme
@@ -21,12 +23,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val backupsViewModel: BackupsViewModel by viewModels {
+        viewModelFactory {
+            initializer {
+                val container = (application as ThingSpotApplication).container
+                BackupsViewModel(container.backups) { enabled ->
+                    if (enabled) DailyBackupWorker.schedule(applicationContext) else DailyBackupWorker.cancel(applicationContext)
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ThingSpotTheme {
-                ThingSpotApp(viewModel)
+                ThingSpotApp(viewModel, backupsViewModel)
             }
         }
     }

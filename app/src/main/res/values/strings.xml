@@ -18,6 +18,7 @@
     <string name="action_add_place">Add Place</string>
     <string name="action_add_place_inside">Place inside</string>
     <string name="action_choose_place">Choose a Place</string>
+    <string name="action_open">Open</string>
     <string name="field_name">Name</string>
     <string name="field_icon">Icon</string>
     <string name="field_colour">Colour</string>
@@ -45,6 +46,17 @@
     <string name="msg_category_deleted">Category deleted</string>
     <string name="msg_photo_failed">Couldn’t use that photo</string>
     <string name="msg_no_camera">No camera app found</string>
+    <string name="msg_backups_on">Backups are on. First backup saved.</string>
+    <string name="msg_backed_up">Backed up</string>
+    <string name="msg_backup_failed">Backup failed. Check the backup folder in Settings.</string>
+    <string name="msg_backup_folder_lost">Choose a backup folder first</string>
+    <string name="msg_restored">Restored</string>
+    <string name="msg_restore_failed">Couldn’t restore that backup. Nothing was changed.</string>
+    <string name="msg_not_a_backup">That file isn’t a ThingSpot backup</string>
+    <string name="msg_backup_newer">That backup is from a newer version of ThingSpot. Update the app first.</string>
+    <string name="msg_backup_damaged">That backup is damaged and can’t be restored</string>
+    <string name="msg_password_set">Backup password on</string>
+    <string name="msg_password_removed">Backup password off</string>
     <string name="msg_failed">That didn’t work. Nothing was changed.</string>
 
     <!-- Search -->
@@ -60,6 +72,7 @@
     <string name="first_run_starter">Add starter Places</string>
     <string name="first_run_starter_detail">Home, with Bedroom, Kitchen, Living room and Garage inside. Rename or delete any of them later.</string>
     <string name="first_run_own">Add my own Place</string>
+    <string name="first_run_restore">Restore from a backup</string>
     <string name="starter_home">Home</string>
     <string name="starter_bedroom">Bedroom</string>
     <string name="starter_kitchen">Kitchen</string>
@@ -139,6 +152,56 @@
         <item quantity="other">%1$d Items lose this Category. They stay where they are.</item>
     </plurals>
 
+    <!-- Backups -->
+    <string name="settings_backups">Backups</string>
+    <string name="backup_off_title">Backups are off</string>
+    <string name="backup_off_body">Choose a folder on this phone, like Documents. ThingSpot saves a copy there every day something changes, and keeps the last 7.</string>
+    <string name="backup_choose_folder">Choose backup folder</string>
+    <string name="backup_folder_title">Backup folder</string>
+    <string name="backup_folder_lost">ThingSpot can’t reach the backup folder any more. Choose it again.</string>
+    <string name="backup_last_title">Last backup</string>
+    <string name="backup_last_never">Not yet</string>
+    <string name="backup_last_failed">The last backup didn’t work. Try Back up now.</string>
+    <string name="backup_schedule">daily when something changes</string>
+    <string name="backup_now">Back up now</string>
+    <string name="backup_share_title">Share a backup</string>
+    <string name="backup_share_body">Send a copy to a new phone, a computer or yourself</string>
+    <string name="backup_restore_title">Restore from a backup</string>
+    <string name="backup_restore_body">Replace everything with a backup file</string>
+    <string name="backup_password_title">Backup password</string>
+    <string name="backup_password_off">Off. Anyone who has a backup file can open it.</string>
+    <string name="backup_password_on">On. Backups can only be restored with the password.</string>
+    <string name="export_title">Export as spreadsheet</string>
+    <string name="export_body">A CSV file of every Item and where it is. It can’t be restored.</string>
+    <string name="banner_off_title">Turn on backups</string>
+    <string name="banner_off_body">If this phone is lost or reset, your inventory goes with it. A daily backup to a folder you choose keeps it safe.</string>
+    <string name="banner_failed_title">Backups need attention</string>
+    <string name="banner_failed_body">The last backup didn’t work.</string>
+    <string name="password_set_title">Set a backup password</string>
+    <string name="password_change_title">Change backup password</string>
+    <string name="password_change">Change</string>
+    <string name="password_turn_off">Turn off</string>
+    <string name="password_field">Password</string>
+    <string name="password_repeat_field">Repeat password</string>
+    <string name="password_short">Use at least 8 characters</string>
+    <string name="password_mismatch">Passwords don’t match</string>
+    <string name="password_warning">If you forget this password, your backups can’t be restored. Nobody can recover it, not even the developer.</string>
+    <string name="password_understood">I understand</string>
+    <string name="restore_password_title">This backup has a password</string>
+    <string name="restore_password_wrong">That password didn’t work</string>
+    <string name="restore_working">Working…</string>
+    <string name="restore_confirm_title">Replace everything with this backup?</string>
+    <string name="restore_confirm_body">Backup from %1$s: %2$s, %3$s and %4$s.\n\nEverything now in ThingSpot will be replaced. A copy of your current data is saved first.</string>
+    <string name="restore_action">Restore</string>
+    <plurals name="count_places">
+        <item quantity="one">%1$d Place</item>
+        <item quantity="other">%1$d Places</item>
+    </plurals>
+    <plurals name="count_photos">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_categories">Categories</string>
@@ -148,7 +211,7 @@
     <string name="pro_unlocked">unlocked</string>
     <string name="pro_locked">locked</string>
     <string name="settings_privacy_title">Your inventory stays on this phone</string>
-    <string name="settings_privacy_body">No account, no cloud, no ads, no tracking. The app has no internet access.</string>
+    <string name="settings_privacy_body">No account, no cloud, no ads, no tracking. The app has no internet access. Backups go only where you put them.</string>
     <string name="settings_licence_title">Free and open source</string>
     <string name="settings_licence_body">GPL-3.0-or-later</string>
 </resources>

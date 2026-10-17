@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.bijojp.thingspot.R
 import io.github.bijojp.thingspot.domain.PlaceId
+import io.github.bijojp.thingspot.ui.BackupsViewModel
 import io.github.bijojp.thingspot.ui.InventoryViewModel
 import io.github.bijojp.thingspot.ui.ItemEditorRoute
 import io.github.bijojp.thingspot.ui.Navigator
@@ -48,6 +49,7 @@ import io.github.bijojp.thingspot.ui.components.PlacePickerDialog
 import io.github.bijojp.thingspot.ui.components.PlaceRow
 import io.github.bijojp.thingspot.ui.components.SectionHeader
 import io.github.bijojp.thingspot.ui.components.TabScaffold
+import io.github.bijojp.thingspot.ui.components.rememberBackupFilePicker
 import io.github.bijojp.thingspot.ui.search.FirstRunCard
 import io.github.bijojp.thingspot.ui.search.starterPlaces
 
@@ -56,7 +58,7 @@ private enum class PlaceDialog { None, AddInside, Edit, Move, Delete }
 /** What's inside a Place, or the top-level Places when [placeId] is null (the Places tab). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, nav: Navigator) {
+fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, backups: BackupsViewModel, nav: Navigator) {
     val inventory = viewModel.inventory.collectAsStateWithLifecycle().value ?: return
     val place = placeId?.let(inventory::place)
     if (placeId != null && place == null) {
@@ -69,6 +71,7 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, nav: Navigator
     val children = inventory.children(placeId)
     val items = placeId?.let(inventory::itemsIn).orEmpty()
     val starter = starterPlaces()
+    val pickBackupFile = rememberBackupFilePicker(backups)
 
     TabScaffold(
         nav = nav,
@@ -157,7 +160,11 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, nav: Navigator
             }
             if (place == null && children.isEmpty()) {
                 item(key = "first-run") {
-                    FirstRunCard(onStarter = { viewModel.addStarterPlaces(starter) }, onOwnPlace = { dialog = PlaceDialog.AddInside })
+                    FirstRunCard(
+                        onStarter = { viewModel.addStarterPlaces(starter) },
+                        onOwnPlace = { dialog = PlaceDialog.AddInside },
+                        onRestore = pickBackupFile,
+                    )
                 }
             }
             if (children.isNotEmpty()) {

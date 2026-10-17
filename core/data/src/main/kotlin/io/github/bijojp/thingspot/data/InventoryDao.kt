@@ -80,6 +80,19 @@ abstract class InventoryDao {
 
     @Insert
     abstract suspend fun insertPhoto(photo: PhotoEntity)
+
+    // Restore only: children before parents, inside one transaction.
+    @Query("DELETE FROM photos")
+    abstract suspend fun clearPhotos()
+
+    @Query("DELETE FROM items")
+    abstract suspend fun clearItems()
+
+    @Query("DELETE FROM places")
+    abstract suspend fun clearPlaces()
+
+    @Query("DELETE FROM categories")
+    abstract suspend fun clearCategories()
 }
 
 data class Snapshot(

@@ -25,7 +25,7 @@ _Avoid_: Tag, Sticker, Code
 ### Keeping data safe
 
 **Backup**:
-A single file holding a complete copy of everything (Places, Items, Categories, Labels and photos) at one moment, optionally protected by a password. Restoring a Backup replaces all current data.
+A single file holding a complete copy of everything (Places, Items, Categories, Labels and photos) at one moment, optionally protected by a password. Restoring a Backup replaces all current data, after a safety copy of that data is saved as another Backup.
 _Avoid_: Export, Snapshot, Sync
 
 **Export**:

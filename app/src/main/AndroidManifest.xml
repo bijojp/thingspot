@@ -7,7 +7,16 @@
     - Android's cloud backup and phone-to-phone transfer are off. Inventory data leaves the
       phone only as a Backup file the user moves themselves.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+        WorkManager (daily Backups) declares these, but ThingSpot never uses network constraints
+        or foreground work, so they're removed to keep the permission list honest.
+        tools/allowed-permissions.txt lists what remains; CI fails on anything else.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
 
     <application
         android:name=".ThingSpotApplication"
@@ -28,7 +37,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Lets the camera app write a new photo into our cache; nothing else is shared. -->
+        <!-- Hands one file at a time to the camera app or the share sheet; see file_paths.xml. -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.files"

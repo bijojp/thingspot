@@ -116,7 +116,7 @@ internal class RoomInventoryRepository(
         requireNotNull(cleanName(raw, maxLength)) { "Name can't be blank" }
 }
 
-private fun Snapshot.toInventory(): Inventory {
+internal fun Snapshot.toInventory(): Inventory {
     // v1 shows one photo per owner: the newest.
     val newestPhotos = photos.sortedBy { it.createdAt }
     val itemPhotos = newestPhotos.filter { it.itemId != null }.associate { it.itemId to it.fileName }

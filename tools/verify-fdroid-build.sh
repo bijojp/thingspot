@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Checks the promises the F-Droid build makes (ADR 0001, ADR 0004):
 #   1. no proprietary Google libraries on its release classpath;
-#   2. no INTERNET permission in its release APK.
+#   2. no permission in its release APK beyond tools/allowed-permissions.txt (never INTERNET).
 # Run after `./gradlew assembleFdroidRelease`. Needs ANDROID_HOME (or local.properties sdk.dir).
 set -euo pipefail
 
@@ -27,9 +27,14 @@ if [[ -z "$apk" ]]; then
     exit 2
 fi
 aapt2="$(find "$sdk/build-tools" -name aapt2 -type f | sort | tail -1)"
-if "$aapt2" dump permissions "$apk" | grep -q 'android.permission.INTERNET'; then
-    echo "FAIL: the F-Droid APK declares INTERNET; ThingSpot must not." >&2
+declared="$("$aapt2" dump permissions "$apk" | sed -n "s/^uses-permission: name='\([^']*\)'.*/\1/p" | sort)"
+allowed="$(grep -v '^#' tools/allowed-permissions.txt | grep -v '^$' | sort)"
+unexpected="$(comm -23 <(echo "$declared") <(echo "$allowed"))"
+if [[ -n "$unexpected" ]]; then
+    echo "FAIL: the F-Droid APK declares permissions that aren't allowed:" >&2
+    echo "$unexpected" >&2
     exit 1
 fi
 
-echo "OK: F-Droid build has no proprietary Google libraries and no INTERNET permission."
+echo "OK: F-Droid build has no proprietary Google libraries and only allowed permissions:"
+echo "$declared" | sed 's/^/  /'

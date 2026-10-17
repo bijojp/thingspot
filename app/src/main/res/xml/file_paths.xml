@@ -1,4 +1,8 @@
-<!-- Only the camera scratch folder is ever shared, and only with the camera app for one shot. -->
+<!--
+    Only two scratch folders are ever shared: camera/ with the camera app for one shot, and
+    share/ with whatever the user picks in the share sheet (a Backup or an Export they asked for).
+-->
 <paths>
     <cache-path name="camera" path="camera/" />
+    <cache-path name="share" path="share/" />
 </paths>

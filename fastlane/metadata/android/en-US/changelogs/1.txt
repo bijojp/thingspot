@@ -1,0 +1,1 @@
+First release: Places, Items, Categories, search, photos, Backups with optional password, spreadsheet export, and QR Labels.

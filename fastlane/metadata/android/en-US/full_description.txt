@@ -1,0 +1,33 @@
+<p><b>Where did I put it?</b> ThingSpot remembers, so you don't have to.</p>
+
+<p>Make <b>Places</b> for wherever things are kept (rooms, shelves, drawers, boxes, bags, the car) and nest them as deep as you like. Add <b>Items</b> to them. Then just search: type “passport” or “garage drill” and see exactly where it is, like <i>Home → Garage → Toolbox</i>.</p>
+
+<p><b>Features</b></p>
+<ul>
+<li>Search everything as you type, ignoring case and accents. Words can match names, notes, Categories and the Places an Item sits in.</li>
+<li>Nested Places: move a box and everything in it moves too.</li>
+<li>One photo per Item and per Place, stored without location data.</li>
+<li>Optional coloured Categories, such as Documents or Electronics.</li>
+<li><b>QR Labels:</b> print sheets of Labels, stick them on boxes, and scan one to see what's inside. Print them blank while packing and link each box when you scan it.</li>
+<li>Automatic daily Backups to a folder you choose, with an optional password (AES-256). Share a Backup to move to a new phone.</li>
+<li>Export everything as a spreadsheet (CSV).</li>
+<li>Light and dark themes.</li>
+</ul>
+
+<p><b>Private by design</b></p>
+<ul>
+<li>No internet permission: ThingSpot can't send anything anywhere.</li>
+<li>No account, no cloud, no ads, no tracking, no subscription.</li>
+<li>No limits on how many Places or Items you can have.</li>
+<li>Android's cloud backup is off. Your data leaves the phone only as a Backup file you move yourself.</li>
+</ul>
+
+<p><b>Permissions</b></p>
+<ul>
+<li><i>Camera</i>: to scan Labels and take photos, asked for only when you use them. Frames are read on the phone and never stored.</li>
+<li><i>Run at startup</i> and <i>prevent sleeping</i>: so the daily Backup still runs after a restart.</li>
+</ul>
+
+<p>On Google Play, QR Labels are part of a one-time Pro purchase that funds development. In this F-Droid version everything is unlocked. If ThingSpot helps you, please consider donating.</p>
+
+<p>ThingSpot is free software under the GPL-3.0-or-later.</p>

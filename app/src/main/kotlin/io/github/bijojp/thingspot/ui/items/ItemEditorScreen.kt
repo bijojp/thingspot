@@ -59,6 +59,7 @@ import io.github.bijojp.thingspot.ui.InventoryViewModel
 import io.github.bijojp.thingspot.ui.LocalSnackbarHostState
 import io.github.bijojp.thingspot.ui.Navigator
 import io.github.bijojp.thingspot.ui.components.CategoryEditorDialog
+import io.github.bijojp.thingspot.ui.components.PhotoField
 import io.github.bijojp.thingspot.ui.components.PlaceIcon
 import io.github.bijojp.thingspot.ui.components.PlacePickerDialog
 import io.github.bijojp.thingspot.ui.components.pathLabel
@@ -79,6 +80,7 @@ fun ItemEditorScreen(itemId: ItemId?, presetPlaceId: PlaceId?, viewModel: Invent
     var placeValue by rememberSaveable { mutableStateOf(existing?.placeId?.value ?: presetPlaceId?.value) }
     var categoryValue by rememberSaveable { mutableStateOf(existing?.categoryId?.value) }
     var notes by rememberSaveable { mutableStateOf(existing?.notes.orEmpty()) }
+    var photo by rememberSaveable { mutableStateOf(existing?.photo) }
     var showErrors by rememberSaveable { mutableStateOf(false) }
     var dialog by rememberSaveable { mutableStateOf(EditorDialog.None) }
 
@@ -91,7 +93,7 @@ fun ItemEditorScreen(itemId: ItemId?, presetPlaceId: PlaceId?, viewModel: Invent
             showErrors = true
             return
         }
-        val fields = ItemFields(cleanedName, place.id, category?.id, notes)
+        val fields = ItemFields(cleanedName, place.id, category?.id, notes, photo)
         if (existing == null) viewModel.addItem(fields) else viewModel.editItem(existing.id, fields)
         nav.back()
     }
@@ -119,6 +121,8 @@ fun ItemEditorScreen(itemId: ItemId?, presetPlaceId: PlaceId?, viewModel: Invent
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
+            PhotoField(photo, viewModel, onChange = { photo = it })
+
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it.take(Limits.ITEM_NAME) },

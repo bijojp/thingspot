@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ import io.github.bijojp.thingspot.ui.PlaceRoute
 import io.github.bijojp.thingspot.ui.components.DeletePlaceDialog
 import io.github.bijojp.thingspot.ui.components.EmptyHint
 import io.github.bijojp.thingspot.ui.components.ItemRow
+import io.github.bijojp.thingspot.ui.components.PhotoBanner
 import io.github.bijojp.thingspot.ui.components.PlaceEditorDialog
 import io.github.bijojp.thingspot.ui.components.PlacePickerDialog
 import io.github.bijojp.thingspot.ui.components.PlaceRow
@@ -149,6 +151,10 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, nav: Navigator
         },
     ) { padding ->
         LazyColumn(Modifier.fillMaxSize(), contentPadding = padding) {
+            val photo = place?.photo
+            if (photo != null) {
+                item(key = "photo") { PhotoBanner(photo, Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) }
+            }
             if (place == null && children.isEmpty()) {
                 item(key = "first-run") {
                     FirstRunCard(onStarter = { viewModel.addStarterPlaces(starter) }, onOwnPlace = { dialog = PlaceDialog.AddInside })
@@ -177,18 +183,20 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, nav: Navigator
         PlaceDialog.None -> Unit
         PlaceDialog.AddInside -> PlaceEditorDialog(
             initial = null,
+            viewModel = viewModel,
             onDismiss = { dialog = PlaceDialog.None },
-            onSave = { name, icon ->
-                viewModel.addPlace(name, icon, parentId = place?.id)
+            onSave = { name, icon, photo ->
+                viewModel.addPlace(name, icon, parentId = place?.id, photo = photo)
                 dialog = PlaceDialog.None
             },
         )
         PlaceDialog.Edit -> if (place != null) {
             PlaceEditorDialog(
                 initial = place,
+                viewModel = viewModel,
                 onDismiss = { dialog = PlaceDialog.None },
-                onSave = { name, icon ->
-                    viewModel.editPlace(place.id, name, icon)
+                onSave = { name, icon, photo ->
+                    viewModel.editPlace(place.id, name, icon, photo)
                     dialog = PlaceDialog.None
                 },
             )

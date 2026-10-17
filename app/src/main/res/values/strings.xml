@@ -25,6 +25,15 @@
     <string name="field_category_optional">Category (optional)</string>
     <string name="field_notes_optional">Notes (optional)</string>
 
+    <!-- Photos -->
+    <string name="field_photo_optional">Photo (optional)</string>
+    <string name="photo_take">Take photo</string>
+    <string name="photo_choose">Choose photo</string>
+    <string name="photo_retake">Retake</string>
+    <string name="photo_choose_other">Choose other</string>
+    <string name="photo_remove">Remove</string>
+    <string name="photo_description">Photo</string>
+
     <!-- Confirmations -->
     <string name="msg_place_added">Place added</string>
     <string name="msg_starter_added">Starter Places added</string>
@@ -34,6 +43,8 @@
     <string name="msg_item_added">Item added</string>
     <string name="msg_item_deleted">Item deleted</string>
     <string name="msg_category_deleted">Category deleted</string>
+    <string name="msg_photo_failed">Couldn’t use that photo</string>
+    <string name="msg_no_camera">No camera app found</string>
     <string name="msg_failed">That didn’t work. Nothing was changed.</string>
 
     <!-- Search -->

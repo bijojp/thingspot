@@ -27,23 +27,25 @@ internal class RoomInventoryRepository(
     private val dao = db.inventoryDao()
 
     override val inventory: Flow<Inventory> =
-        db.invalidationTracker.createFlow("places", "items", "categories")
+        db.invalidationTracker.createFlow("places", "items", "categories", "photos")
             .conflate()
             .map { dao.snapshot().toInventory() }
 
     private suspend fun current(): Inventory = dao.snapshot().toInventory()
 
-    override suspend fun addPlace(name: String, icon: String, parentId: PlaceId?): PlaceId = db.withTransaction {
+    override suspend fun addPlace(name: String, icon: String, parentId: PlaceId?, photo: String?): PlaceId = db.withTransaction {
         if (parentId != null) requireNotNull(dao.place(parentId.value)) { "Parent Place not found" }
         val time = now()
         val id = newId()
         dao.insertPlace(PlaceEntity(id, requireName(name, Limits.PLACE_NAME), icon, parentId?.value, time, time))
+        setPlacePhoto(id, photo)
         PlaceId(id)
     }
 
-    override suspend fun editPlace(id: PlaceId, name: String, icon: String) = db.withTransaction {
+    override suspend fun editPlace(id: PlaceId, name: String, icon: String, photo: String?) = db.withTransaction {
         val place = requireNotNull(dao.place(id.value)) { "Place not found" }
         dao.updatePlace(place.copy(name = requireName(name, Limits.PLACE_NAME), icon = icon, updatedAt = now()))
+        setPlacePhoto(id.value, photo)
     }
 
     override suspend fun movePlace(id: PlaceId, newParentId: PlaceId?) = db.withTransaction {
@@ -65,12 +67,14 @@ internal class RoomInventoryRepository(
         val time = now()
         val id = newId()
         dao.insertItem(fields.toEntity(id, createdAt = time, updatedAt = time))
+        setItemPhoto(id, fields.photo)
         ItemId(id)
     }
 
     override suspend fun editItem(id: ItemId, fields: ItemFields) = db.withTransaction {
         val item = requireNotNull(dao.item(id.value)) { "Item not found" }
         dao.updateItem(fields.toEntity(item.id, createdAt = item.createdAt, updatedAt = now()))
+        setItemPhoto(item.id, fields.photo)
     }
 
     override suspend fun deleteItem(id: ItemId) = dao.deleteItem(id.value)
@@ -89,6 +93,19 @@ internal class RoomInventoryRepository(
 
     override suspend fun deleteCategory(id: CategoryId) = dao.deleteCategory(id.value)
 
+    /** v1 keeps one photo per Item: replace whatever is there unless it's unchanged. */
+    private suspend fun setItemPhoto(itemId: String, fileName: String?) {
+        if (dao.itemPhotoFiles(itemId) == listOfNotNull(fileName)) return
+        dao.deleteItemPhotos(itemId)
+        if (fileName != null) dao.insertPhoto(PhotoEntity(newId(), itemId = itemId, placeId = null, fileName, now()))
+    }
+
+    private suspend fun setPlacePhoto(placeId: String, fileName: String?) {
+        if (dao.placePhotoFiles(placeId) == listOfNotNull(fileName)) return
+        dao.deletePlacePhotos(placeId)
+        if (fileName != null) dao.insertPhoto(PhotoEntity(newId(), itemId = null, placeId = placeId, fileName, now()))
+    }
+
     private suspend fun ItemFields.toEntity(id: String, createdAt: Long, updatedAt: Long): ItemEntity {
         requireNotNull(dao.place(placeId.value)) { "Every Item needs a Place that exists" }
         val category = categoryId?.takeIf { dao.category(it.value) != null }
@@ -99,10 +116,21 @@ internal class RoomInventoryRepository(
         requireNotNull(cleanName(raw, maxLength)) { "Name can't be blank" }
 }
 
-private fun Snapshot.toInventory() = Inventory(
-    places = places.map { Place(PlaceId(it.id), it.name, it.icon, it.parentId?.let(::PlaceId), it.createdAt, it.updatedAt) },
-    items = items.map {
-        Item(ItemId(it.id), it.name, PlaceId(it.placeId), it.categoryId?.let(::CategoryId), it.notes, it.createdAt, it.updatedAt)
-    },
-    categories = categories.map { Category(CategoryId(it.id), it.name, it.color, it.createdAt, it.updatedAt) },
-)
+private fun Snapshot.toInventory(): Inventory {
+    // v1 shows one photo per owner: the newest.
+    val newestPhotos = photos.sortedBy { it.createdAt }
+    val itemPhotos = newestPhotos.filter { it.itemId != null }.associate { it.itemId to it.fileName }
+    val placePhotos = newestPhotos.filter { it.placeId != null }.associate { it.placeId to it.fileName }
+    return Inventory(
+        places = places.map {
+            Place(PlaceId(it.id), it.name, it.icon, it.parentId?.let(::PlaceId), it.createdAt, it.updatedAt, placePhotos[it.id])
+        },
+        items = items.map {
+            Item(
+                ItemId(it.id), it.name, PlaceId(it.placeId), it.categoryId?.let(::CategoryId), it.notes,
+                it.createdAt, it.updatedAt, itemPhotos[it.id],
+            )
+        },
+        categories = categories.map { Category(CategoryId(it.id), it.name, it.color, it.createdAt, it.updatedAt) },
+    )
+}

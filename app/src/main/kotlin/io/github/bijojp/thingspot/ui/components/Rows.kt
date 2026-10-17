@@ -38,7 +38,10 @@ fun ItemRow(item: Item, inventory: Inventory, onClick: () -> Unit, showPath: Boo
     ListItem(
         headlineContent = { Text(item.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         supportingContent = supporting?.let { { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
-        leadingContent = { CategoryDot(category) },
+        leadingContent = {
+            val photo = item.photo
+            if (photo != null) PhotoThumbnail(photo) else CategoryDot(category)
+        },
         modifier = Modifier.clickable(onClick = onClick),
     )
 }
@@ -51,7 +54,10 @@ fun PlaceRow(place: Place, inventory: Inventory, onClick: () -> Unit, showPath: 
     ListItem(
         headlineContent = { Text(place.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         supportingContent = parents.takeIf { it.isNotEmpty() }?.let { { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
-        leadingContent = { PlaceIcon(place.icon) },
+        leadingContent = {
+            val photo = place.photo
+            if (photo != null) PhotoThumbnail(photo) else PlaceIcon(place.icon)
+        },
         trailingContent = if (count > 0) {
             { Text(count.toString(), style = MaterialTheme.typography.labelLarge) }
         } else {

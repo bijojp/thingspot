@@ -12,6 +12,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import io.github.bijojp.thingspot.domain.ItemId
 import io.github.bijojp.thingspot.domain.PlaceId
+import io.github.bijojp.thingspot.ui.components.LocalPhotoFiles
 import io.github.bijojp.thingspot.ui.items.ItemEditorScreen
 import io.github.bijojp.thingspot.ui.items.ItemsScreen
 import io.github.bijojp.thingspot.ui.places.PlaceScreen
@@ -34,7 +35,10 @@ fun ThingSpotApp(viewModel: InventoryViewModel) {
         }
     }
 
-    CompositionLocalProvider(LocalSnackbarHostState provides snackbar) {
+    CompositionLocalProvider(
+        LocalSnackbarHostState provides snackbar,
+        LocalPhotoFiles provides viewModel::photoFile,
+    ) {
         NavDisplay(
             backStack = backStack,
             onBack = nav::back,

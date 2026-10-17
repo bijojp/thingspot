@@ -1,0 +1,4 @@
+<!-- Only the camera scratch folder is ever shared, and only with the camera app for one shot. -->
+<paths>
+    <cache-path name="camera" path="camera/" />
+</paths>

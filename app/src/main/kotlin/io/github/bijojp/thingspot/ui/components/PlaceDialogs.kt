@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -58,20 +60,27 @@ import io.github.bijojp.thingspot.domain.PlaceId
 import io.github.bijojp.thingspot.domain.SearchResult
 import io.github.bijojp.thingspot.domain.TreeRow
 import io.github.bijojp.thingspot.domain.cleanName
+import io.github.bijojp.thingspot.ui.InventoryViewModel
 
-/** Name and icon for a new Place ([initial] null) or an existing one. */
+/** Name, icon and optional photo for a new Place ([initial] null) or an existing one. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PlaceEditorDialog(initial: Place?, onDismiss: () -> Unit, onSave: (name: String, icon: String) -> Unit) {
+fun PlaceEditorDialog(
+    initial: Place?,
+    viewModel: InventoryViewModel,
+    onDismiss: () -> Unit,
+    onSave: (name: String, icon: String, photo: String?) -> Unit,
+) {
     var name by rememberSaveable { mutableStateOf(initial?.name.orEmpty()) }
     var icon by rememberSaveable { mutableStateOf(initial?.icon ?: DEFAULT_PLACE_ICON) }
+    var photo by rememberSaveable { mutableStateOf(initial?.photo) }
     val clean = cleanName(name, Limits.PLACE_NAME)
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(if (initial == null) R.string.place_new else R.string.place_edit)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it.take(Limits.PLACE_NAME) },
@@ -97,10 +106,12 @@ fun PlaceEditorDialog(initial: Place?, onDismiss: () -> Unit, onSave: (name: Str
                         }
                     }
                 }
+                Text(stringResource(R.string.field_photo_optional), style = MaterialTheme.typography.labelLarge)
+                PhotoField(photo, viewModel, onChange = { photo = it })
             }
         },
         confirmButton = {
-            TextButton(onClick = { clean?.let { onSave(it, icon) } }, enabled = clean != null) {
+            TextButton(onClick = { clean?.let { onSave(it, icon, photo) } }, enabled = clean != null) {
                 Text(stringResource(R.string.action_save))
             }
         },

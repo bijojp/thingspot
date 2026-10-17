@@ -69,3 +69,24 @@ data class CategoryEntity(
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
 )
+
+/**
+ * A photo of an Item or a Place (exactly one of [itemId] / [placeId] is set). Kept in its own
+ * table so several photos per Item can come later without a migration; v1 shows one.
+ * Rows go when their owner goes; unreferenced files are swept by [PhotoStore].
+ */
+@Entity(
+    tableName = "photos",
+    foreignKeys = [
+        ForeignKey(entity = ItemEntity::class, parentColumns = ["id"], childColumns = ["item_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = PlaceEntity::class, parentColumns = ["id"], childColumns = ["place_id"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("item_id"), Index("place_id")],
+)
+data class PhotoEntity(
+    @PrimaryKey val id: String,
+    @ColumnInfo(name = "item_id") val itemId: String?,
+    @ColumnInfo(name = "place_id") val placeId: String?,
+    @ColumnInfo(name = "file_name") val fileName: String,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
+)

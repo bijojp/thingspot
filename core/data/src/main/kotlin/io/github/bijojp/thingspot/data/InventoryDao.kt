@@ -17,9 +17,12 @@ abstract class InventoryDao {
     @Query("SELECT * FROM categories")
     abstract suspend fun categories(): List<CategoryEntity>
 
+    @Query("SELECT * FROM photos")
+    abstract suspend fun photos(): List<PhotoEntity>
+
     /** Everything at one consistent moment. */
     @Transaction
-    open suspend fun snapshot(): Snapshot = Snapshot(places(), items(), categories())
+    open suspend fun snapshot(): Snapshot = Snapshot(places(), items(), categories(), photos())
 
     @Query("SELECT * FROM places WHERE id = :id")
     abstract suspend fun place(id: String): PlaceEntity?
@@ -62,10 +65,26 @@ abstract class InventoryDao {
 
     @Query("DELETE FROM categories WHERE id = :id")
     abstract suspend fun deleteCategory(id: String)
+
+    @Query("SELECT file_name FROM photos WHERE item_id = :itemId")
+    abstract suspend fun itemPhotoFiles(itemId: String): List<String>
+
+    @Query("SELECT file_name FROM photos WHERE place_id = :placeId")
+    abstract suspend fun placePhotoFiles(placeId: String): List<String>
+
+    @Query("DELETE FROM photos WHERE item_id = :itemId")
+    abstract suspend fun deleteItemPhotos(itemId: String)
+
+    @Query("DELETE FROM photos WHERE place_id = :placeId")
+    abstract suspend fun deletePlacePhotos(placeId: String)
+
+    @Insert
+    abstract suspend fun insertPhoto(photo: PhotoEntity)
 }
 
 data class Snapshot(
     val places: List<PlaceEntity>,
     val items: List<ItemEntity>,
     val categories: List<CategoryEntity>,
+    val photos: List<PhotoEntity>,
 )

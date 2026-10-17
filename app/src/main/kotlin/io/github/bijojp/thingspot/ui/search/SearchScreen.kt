@@ -135,9 +135,10 @@ fun SearchScreen(viewModel: InventoryViewModel, nav: Navigator) {
     if (addingPlace) {
         PlaceEditorDialog(
             initial = null,
+            viewModel = viewModel,
             onDismiss = { addingPlace = false },
-            onSave = { name, icon ->
-                viewModel.addPlace(name, icon, parentId = null)
+            onSave = { name, icon, photo ->
+                viewModel.addPlace(name, icon, parentId = null, photo = photo)
                 addingPlace = false
             },
         )

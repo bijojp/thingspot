@@ -14,7 +14,10 @@ import io.github.bijojp.thingspot.ui.theme.ThingSpotTheme
 class MainActivity : ComponentActivity() {
     private val viewModel: InventoryViewModel by viewModels {
         viewModelFactory {
-            initializer { InventoryViewModel((application as ThingSpotApplication).container.inventory) }
+            initializer {
+                val container = (application as ThingSpotApplication).container
+                InventoryViewModel(container.inventory, container.photos)
+            }
         }
     }
 

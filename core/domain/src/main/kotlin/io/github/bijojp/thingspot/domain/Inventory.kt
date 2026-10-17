@@ -85,6 +85,9 @@ class Inventory(
         return rows
     }
 
+    /** Every photo file something still points at; any other photo file is safe to delete. */
+    fun referencedPhotos(): Set<String> = (places.mapNotNull { it.photo } + items.mapNotNull { it.photo }).toSet()
+
     fun recentItems(limit: Int): List<Item> = items.sortedByDescending { it.createdAt }.take(limit)
 
     /** What deleting [placeId] would do, or null if there is no such Place. */

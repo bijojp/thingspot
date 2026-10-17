@@ -1,10 +1,12 @@
 package io.github.bijojp.thingspot.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.bijojp.thingspot.R
+import io.github.bijojp.thingspot.data.PhotoStore
 import io.github.bijojp.thingspot.domain.CategoryId
 import io.github.bijojp.thingspot.domain.Inventory
 import io.github.bijojp.thingspot.domain.InventoryRepository
@@ -15,15 +17,20 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.File
 
 /** A Place to create, with Places to create inside it (the first-launch starter set). */
 data class NewPlace(val name: String, val icon: String, val children: List<NewPlace> = emptyList())
 
 /** One shared view of the inventory for every screen, plus the changes screens can ask for. */
-class InventoryViewModel(private val repository: InventoryRepository) : ViewModel() {
+class InventoryViewModel(
+    private val repository: InventoryRepository,
+    private val photos: PhotoStore,
+) : ViewModel() {
     /** Null only until the first snapshot loads. */
     val inventory: StateFlow<Inventory?> = repository.inventory.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -32,8 +39,35 @@ class InventoryViewModel(private val repository: InventoryRepository) : ViewMode
     /** Short confirmations ("Item added") as string resources, for the snackbar. */
     val messages: Flow<Int> = messageChannel.receiveAsFlow()
 
-    fun addPlace(name: String, icon: String, parentId: PlaceId?) =
-        perform(R.string.msg_place_added) { repository.addPlace(name, icon, parentId) }
+    init {
+        // Tidy photo files left behind by deleted Items/Places or abandoned edits.
+        viewModelScope.launch { photos.sweep(repository.inventory.first().referencedPhotos()) }
+    }
+
+    fun photoFile(name: String): File = photos.file(name)
+
+    fun newCameraFile(): File = photos.newCameraFile()
+
+    fun importPhoto(source: File, onImported: (String) -> Unit) = importPhoto(Uri.fromFile(source), onImported, cleanUp = source)
+
+    fun importPhoto(source: Uri, onImported: (String) -> Unit, cleanUp: File? = null) {
+        viewModelScope.launch {
+            runCatching { photos.import(source) }
+                .onSuccess(onImported)
+                .onFailure {
+                    Log.w(TAG, "Photo import failed", it)
+                    messageChannel.send(R.string.msg_photo_failed)
+                }
+            cleanUp?.delete()
+        }
+    }
+
+    fun reportNoCamera() {
+        viewModelScope.launch { messageChannel.send(R.string.msg_no_camera) }
+    }
+
+    fun addPlace(name: String, icon: String, parentId: PlaceId?, photo: String? = null) =
+        perform(R.string.msg_place_added) { repository.addPlace(name, icon, parentId, photo) }
 
     fun addStarterPlaces(starter: NewPlace) = perform(R.string.msg_starter_added) { addTree(starter, parentId = null) }
 
@@ -42,7 +76,8 @@ class InventoryViewModel(private val repository: InventoryRepository) : ViewMode
         place.children.forEach { addTree(it, id) }
     }
 
-    fun editPlace(id: PlaceId, name: String, icon: String) = perform(R.string.msg_saved) { repository.editPlace(id, name, icon) }
+    fun editPlace(id: PlaceId, name: String, icon: String, photo: String?) =
+        perform(R.string.msg_saved) { repository.editPlace(id, name, icon, photo) }
 
     fun movePlace(id: PlaceId, newParentId: PlaceId?) = perform(R.string.msg_moved) { repository.movePlace(id, newParentId) }
 

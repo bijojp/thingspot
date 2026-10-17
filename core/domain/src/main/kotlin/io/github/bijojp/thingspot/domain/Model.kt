@@ -19,6 +19,8 @@ data class Place(
     val parentId: PlaceId?,
     val createdAt: Long,
     val updatedAt: Long,
+    /** File name of its photo in the app's private storage, if it has one. */
+    val photo: String? = null,
 )
 
 /** One physical object, or one bundle kept together, always in exactly one Place. */
@@ -30,6 +32,8 @@ data class Item(
     val notes: String,
     val createdAt: Long,
     val updatedAt: Long,
+    /** File name of its photo in the app's private storage, if it has one. */
+    val photo: String? = null,
 )
 
 /** An optional, coloured grouping of Items by kind. [color] is ARGB, e.g. 0xFF5B9CF5. */
@@ -47,6 +51,7 @@ data class ItemFields(
     val placeId: PlaceId,
     val categoryId: CategoryId?,
     val notes: String,
+    val photo: String? = null,
 )
 
 object Limits {

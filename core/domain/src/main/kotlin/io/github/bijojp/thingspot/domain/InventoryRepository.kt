@@ -10,9 +10,9 @@ interface InventoryRepository {
     /** The latest snapshot, re-emitted after every change. */
     val inventory: Flow<Inventory>
 
-    suspend fun addPlace(name: String, icon: String, parentId: PlaceId?): PlaceId
+    suspend fun addPlace(name: String, icon: String, parentId: PlaceId?, photo: String? = null): PlaceId
 
-    suspend fun editPlace(id: PlaceId, name: String, icon: String)
+    suspend fun editPlace(id: PlaceId, name: String, icon: String, photo: String?)
 
     /** Fails if [newParentId] is the Place itself or one of its sub-places. */
     suspend fun movePlace(id: PlaceId, newParentId: PlaceId?)

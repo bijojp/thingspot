@@ -100,6 +100,11 @@ dependencies {
     implementation("androidx.navigation3:navigation3-runtime:1.2.0")
     implementation("androidx.navigation3:navigation3-ui:1.2.0")
     implementation("androidx.work:work-runtime:2.12.0")
+    implementation("androidx.camera:camera-camera2:1.6.2")
+    implementation("androidx.camera:camera-lifecycle:1.6.2")
+    implementation("androidx.camera:camera-view:1.6.2")
+    // Pure-Java QR encode/decode: no native code, no ML Kit (F-Droid, reproducible builds).
+    implementation("com.google.zxing:core:3.5.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")

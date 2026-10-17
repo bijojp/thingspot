@@ -1,6 +1,8 @@
 package io.github.bijojp.thingspot.ui.components
 
+import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil3.compose.AsyncImage
 import io.github.bijojp.thingspot.R
@@ -102,7 +105,7 @@ fun PhotoField(photo: String?, viewModel: InventoryViewModel, onChange: (String?
     val choosePicture = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) viewModel.importPhoto(uri, onImported = onChange)
     }
-    val takePhoto = {
+    val openCamera = {
         val file = viewModel.newCameraFile()
         cameraFile = file.path
         try {
@@ -110,6 +113,17 @@ fun PhotoField(photo: String?, viewModel: InventoryViewModel, onChange: (String?
         } catch (_: ActivityNotFoundException) {
             cameraFile = null
             viewModel.reportNoCamera()
+        }
+    }
+    // The app declares CAMERA for the Label scanner, so Android requires it for the camera app too.
+    val askCamera = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) openCamera() else viewModel.reportNoCamera()
+    }
+    val takePhoto = {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openCamera()
+        } else {
+            askCamera.launch(Manifest.permission.CAMERA)
         }
     }
     val choosePhoto = { choosePicture.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }

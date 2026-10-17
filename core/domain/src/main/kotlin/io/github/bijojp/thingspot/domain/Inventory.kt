@@ -9,6 +9,7 @@ class Inventory(
     places: Collection<Place>,
     items: Collection<Item>,
     categories: Collection<Category>,
+    labels: Collection<Label> = emptyList(),
 ) {
     val places: List<Place> = places.sortedWith(byName { it.name })
     val items: List<Item> = items.sortedWith(byName { it.name })
@@ -20,6 +21,8 @@ class Inventory(
     private val childrenByParent = this.places.groupBy { it.parentId }
     private val itemsByPlace = this.items.groupBy { it.placeId }
     private val itemsByCategory = this.items.groupBy { it.categoryId }
+    private val labelsByCode = labels.associateBy { it.code }
+    private val labelsByPlace = labels.sortedBy { it.createdAt }.groupBy { it.placeId }
 
     fun place(id: PlaceId): Place? = placesById[id]
 
@@ -38,6 +41,12 @@ class Inventory(
         itemsIn(placeId).size + descendants(placeId).sumOf { itemsIn(it).size }
 
     fun itemsInCategory(categoryId: CategoryId): List<Item> = itemsByCategory[categoryId].orEmpty()
+
+    /** Labels stuck on [placeId], oldest first. */
+    fun labelsOn(placeId: PlaceId): List<Label> = labelsByPlace[placeId].orEmpty()
+
+    /** The Place a scanned Label belongs to, or null for a blank (or unknown) Label. */
+    fun placeFor(code: LabelCode): Place? = labelsByCode[code]?.let { place(it.placeId) }
 
     /** The chain of Places from the top level down to [placeId], inclusive. */
     fun path(placeId: PlaceId): List<Place> {
@@ -100,7 +109,7 @@ class Inventory(
             else -> places.map { it.id }.filter { it != placeId }
                 .let { if (it.isEmpty()) ItemsGoTo.NoPlaceLeft else ItemsGoTo.UserChoice(it) }
         }
-        return PlaceDeletion(place, children(placeId), items, itemsGoTo)
+        return PlaceDeletion(place, children(placeId), items, itemsGoTo, labelsOn(placeId))
     }
 
     /** Items and Places matching every word of [query], best matches first. */

@@ -90,3 +90,17 @@ data class PhotoEntity(
     @ColumnInfo(name = "file_name") val fileName: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )
+
+/** A Label linked to a Place. Blank Labels have no row; deleting the Place makes its Labels blank. */
+@Entity(
+    tableName = "labels",
+    foreignKeys = [
+        ForeignKey(entity = PlaceEntity::class, parentColumns = ["id"], childColumns = ["place_id"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("place_id")],
+)
+data class LabelEntity(
+    @PrimaryKey val code: String,
+    @ColumnInfo(name = "place_id") val placeId: String,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
+)

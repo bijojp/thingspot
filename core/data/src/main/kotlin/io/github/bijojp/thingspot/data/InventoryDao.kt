@@ -2,6 +2,7 @@ package io.github.bijojp.thingspot.data
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -20,9 +21,12 @@ abstract class InventoryDao {
     @Query("SELECT * FROM photos")
     abstract suspend fun photos(): List<PhotoEntity>
 
+    @Query("SELECT * FROM labels")
+    abstract suspend fun labels(): List<LabelEntity>
+
     /** Everything at one consistent moment. */
     @Transaction
-    open suspend fun snapshot(): Snapshot = Snapshot(places(), items(), categories(), photos())
+    open suspend fun snapshot(): Snapshot = Snapshot(places(), items(), categories(), photos(), labels())
 
     @Query("SELECT * FROM places WHERE id = :id")
     abstract suspend fun place(id: String): PlaceEntity?
@@ -81,7 +85,17 @@ abstract class InventoryDao {
     @Insert
     abstract suspend fun insertPhoto(photo: PhotoEntity)
 
+    /** Linking a code that's already on another Place moves it. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun upsertLabel(label: LabelEntity)
+
+    @Query("DELETE FROM labels WHERE code = :code")
+    abstract suspend fun deleteLabel(code: String)
+
     // Restore only: children before parents, inside one transaction.
+    @Query("DELETE FROM labels")
+    abstract suspend fun clearLabels()
+
     @Query("DELETE FROM photos")
     abstract suspend fun clearPhotos()
 
@@ -100,4 +114,5 @@ data class Snapshot(
     val items: List<ItemEntity>,
     val categories: List<CategoryEntity>,
     val photos: List<PhotoEntity>,
+    val labels: List<LabelEntity>,
 )

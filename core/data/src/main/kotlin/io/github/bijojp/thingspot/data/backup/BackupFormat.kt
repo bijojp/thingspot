@@ -1,5 +1,6 @@
 package io.github.bijojp.thingspot.data.backup
 
+import io.github.bijojp.thingspot.domain.LabelCode
 import io.github.bijojp.thingspot.domain.Limits
 import io.github.bijojp.thingspot.domain.cleanName
 import io.github.bijojp.thingspot.domain.cleanNotes
@@ -36,6 +37,7 @@ data class BackupData(
     val items: List<BackupItem>,
     val categories: List<BackupCategory>,
     val photos: List<BackupPhoto>,
+    val labels: List<BackupLabel> = emptyList(),
 )
 
 @Serializable
@@ -74,6 +76,13 @@ data class BackupPhoto(
     val itemId: String? = null,
     val placeId: String? = null,
     val fileName: String,
+    val createdAt: Long,
+)
+
+@Serializable
+data class BackupLabel(
+    val code: String,
+    val placeId: String,
     val createdAt: Long,
 )
 
@@ -183,7 +192,8 @@ object BackupFormat {
             val ownerOk = (photo.itemId != null && photo.itemId in itemIds) != (photo.placeId != null && photo.placeId in placeIds)
             ownerOk && isSafeFileName(photo.fileName) && photo.fileName in photosInZip
         }
-        return BackupData(places, items, categories, photos)
+        val labels = data.labels.distinctBy { it.code }.filter { LabelCode.parse(it.code)?.value == it.code && it.placeId in placeIds }
+        return BackupData(places, items, categories, photos, labels)
     }
 
     /** Whether following parents from [placeId] ever comes back to it. */
@@ -213,6 +223,7 @@ object BackupFormat {
         items = items.sortedBy { it.id },
         categories = categories.sortedBy { it.id },
         photos = photos.sortedBy { it.id },
+        labels = labels.sortedBy { it.code },
     )
 
     private const val MANIFEST = "manifest.json"

@@ -16,6 +16,10 @@
         tools/allowed-permissions.txt lists what remains; CI fails on anything else.
     -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+
+    <!-- QR Label scanner, decoded on the phone; frames are never stored. Asked for only when used. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
 
     <application

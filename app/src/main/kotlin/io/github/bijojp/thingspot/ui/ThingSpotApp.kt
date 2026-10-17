@@ -17,6 +17,7 @@ import io.github.bijojp.thingspot.ui.components.BackupEffects
 import io.github.bijojp.thingspot.ui.components.LocalPhotoFiles
 import io.github.bijojp.thingspot.ui.items.ItemEditorScreen
 import io.github.bijojp.thingspot.ui.items.ItemsScreen
+import io.github.bijojp.thingspot.ui.labels.ScanScreen
 import io.github.bijojp.thingspot.ui.places.PlaceScreen
 import io.github.bijojp.thingspot.ui.search.SearchScreen
 import io.github.bijojp.thingspot.ui.settings.SettingsScreen
@@ -49,6 +50,7 @@ fun ThingSpotApp(viewModel: InventoryViewModel, backups: BackupsViewModel) {
                 entry<PlaceRoute> { route -> PlaceScreen(route.placeId?.let(::PlaceId), viewModel, backups, nav) }
                 entry<ItemsRoute> { ItemsScreen(viewModel, nav) }
                 entry<SettingsRoute> { SettingsScreen(viewModel, backups, nav) }
+                entry<ScanRoute> { ScanScreen(viewModel, nav) }
                 entry<ItemEditorRoute> { route ->
                     ItemEditorScreen(route.itemId?.let(::ItemId), route.placeId?.let(::PlaceId), viewModel, nav)
                 }

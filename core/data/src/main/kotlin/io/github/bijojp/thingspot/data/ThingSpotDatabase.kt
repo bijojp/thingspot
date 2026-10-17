@@ -9,11 +9,12 @@ import io.github.bijojp.thingspot.data.backup.Backups
 import io.github.bijojp.thingspot.domain.InventoryRepository
 
 @Database(
-    entities = [PlaceEntity::class, ItemEntity::class, CategoryEntity::class, PhotoEntity::class],
-    version = 2,
+    entities = [PlaceEntity::class, ItemEntity::class, CategoryEntity::class, PhotoEntity::class, LabelEntity::class],
+    version = 3,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2), // adds photos
+        AutoMigration(from = 2, to = 3), // adds labels
     ],
 )
 abstract class ThingSpotDatabase : RoomDatabase() {

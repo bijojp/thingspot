@@ -277,6 +277,8 @@ fun DeletePlaceDialog(inventory: Inventory, deletion: PlaceDeletion, onDismiss: 
                     }
                     ItemsGoTo.NoPlaceLeft -> Text(pluralStringResource(R.plurals.place_delete_blocked, items, items))
                 }
+                val labels = deletion.labels.size
+                if (labels > 0) Text(pluralStringResource(R.plurals.place_delete_labels, labels, labels))
             }
         },
         confirmButton = {

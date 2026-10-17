@@ -12,7 +12,7 @@ An offline, privacy-first home inventory for Android.
 
 ThingSpot remembers where your things are. Rooms, shelves, drawers, boxes and bags become **Places** that nest inside each other; your things are **Items** kept in exactly one Place. Search for anything and see its full path (Home → Garage → Toolbox) in seconds. Stick a printed QR **Label** on a box, and scanning it shows what's inside.
 
-> **Status: pre-alpha.** This is the project skeleton. Nothing is usable yet. See [the plan](docs/PLAN.md).
+> **Status: pre-alpha.** Places, Items, Categories, search, photos, Backups and QR Labels work; polish and the first F-Droid release are next. See [the plan](docs/PLAN.md).
 
 ## Promises
 
@@ -25,10 +25,10 @@ ThingSpot remembers where your things are. Rooms, shelves, drawers, boxes and ba
 
 | File | What it guarantees |
 | --- | --- |
-| `app/src/main/AndroidManifest.xml` | No `INTERNET` permission; `allowBackup="false"` |
+| `app/src/main/AndroidManifest.xml` | No `INTERNET` permission; `allowBackup="false"`; camera only for the Label scanner and photos, asked for when used |
 | `app/src/main/res/xml/data_extraction_rules.xml` | Every data domain is excluded from cloud backup and device transfer |
 | `app/build.gradle.kts` | No Firebase, Google Play Services or analytics SDKs; Play Billing only in the `play` flavour |
-| `tools/verify-fdroid-build.sh` | Fails CI if the F-Droid build gains a proprietary Google library or the `INTERNET` permission |
+| `tools/verify-fdroid-build.sh` | Fails if the F-Droid build gains a proprietary Google library or any permission not in `tools/allowed-permissions.txt` |
 
 ## Two builds, one app
 

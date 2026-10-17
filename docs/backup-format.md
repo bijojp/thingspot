@@ -18,6 +18,7 @@ Rename the file to `.zip` and open it with any unzip tool. Inside:
 - **items**: `id`, `name`, `placeId`, `categoryId` (or null), `notes`, `createdAt`, `updatedAt`
 - **categories**: `id`, `name`, `color` (ARGB as a number, e.g. `4284193013` = `0xFF5B9CF5`), `createdAt`, `updatedAt`
 - **photos**: `id`, `itemId` or `placeId` (exactly one), `fileName`, `createdAt`
+- **labels** (optional; absent in older backups): `code` (8 characters, e.g. `K7Q3MX9P`), `placeId`, `createdAt`. A Label's QR code holds `THINGSPOT:L:<code>`.
 
 When reading, ThingSpot ignores fields it doesn't know about. It refuses a `formatVersion` newer than it understands.
 

@@ -17,6 +17,9 @@ data object ItemsRoute : NavKey
 @Serializable
 data object SettingsRoute : NavKey
 
+@Serializable
+data object ScanRoute : NavKey
+
 /** Add an Item (optionally already in [placeId]), or edit the Item [itemId]. */
 @Serializable
 data class ItemEditorRoute(val itemId: String? = null, val placeId: String? = null) : NavKey
@@ -34,6 +37,12 @@ class Navigator(private val backStack: NavBackStack<NavKey>) {
         backStack.add(route)
     }
 
+    /** Swaps the current screen for [route], e.g. the scanner for the Place it found. */
+    fun replaceTop(route: NavKey) {
+        if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+        backStack.add(route)
+    }
+
     fun back() {
         if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
     }
@@ -44,7 +53,7 @@ class Navigator(private val backStack: NavBackStack<NavKey>) {
     }
 
     val selectedTab: Tab
-        get() = when (backStack.lastOrNull { it !is ItemEditorRoute }) {
+        get() = when (backStack.lastOrNull { it !is ItemEditorRoute && it != ScanRoute }) {
             is PlaceRoute -> Tab.Places
             ItemsRoute -> Tab.Items
             SettingsRoute -> Tab.Settings

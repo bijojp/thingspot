@@ -2,14 +2,15 @@ package io.github.bijojp.thingspot.domain
 
 /**
  * What deleting one Place does. Only that Place is removed: the Places directly inside it move
- * up to its parent (becoming top-level if it had none), and its Items must go somewhere,
- * because every Item is always in exactly one Place.
+ * up to its parent (becoming top-level if it had none), its Items must go somewhere, because
+ * every Item is always in exactly one Place, and its Labels become blank.
  */
 data class PlaceDeletion(
     val place: Place,
     val childPlaces: List<Place>,
     val items: List<Item>,
     val itemsGoTo: ItemsGoTo,
+    val labels: List<Label> = emptyList(),
 ) {
     /** Can the deletion go ahead, given the user's [choice] of destination (if one is needed)? */
     fun isReady(choice: PlaceId?): Boolean = when (itemsGoTo) {

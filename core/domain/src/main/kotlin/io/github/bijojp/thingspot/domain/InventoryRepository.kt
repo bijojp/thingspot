@@ -32,4 +32,10 @@ interface InventoryRepository {
 
     /** Items in the Category keep everything else; they just lose the Category. */
     suspend fun deleteCategory(id: CategoryId)
+
+    /** Sticks [code] on [placeId]. A Label already on another Place moves here. */
+    suspend fun linkLabel(code: LabelCode, placeId: PlaceId)
+
+    /** Makes the Label blank again. */
+    suspend fun unlinkLabel(code: LabelCode)
 }

@@ -8,6 +8,8 @@ import io.github.bijojp.thingspot.domain.InventoryRepository
 import io.github.bijojp.thingspot.domain.Item
 import io.github.bijojp.thingspot.domain.ItemFields
 import io.github.bijojp.thingspot.domain.ItemId
+import io.github.bijojp.thingspot.domain.Label
+import io.github.bijojp.thingspot.domain.LabelCode
 import io.github.bijojp.thingspot.domain.Limits
 import io.github.bijojp.thingspot.domain.Place
 import io.github.bijojp.thingspot.domain.PlaceId
@@ -27,7 +29,7 @@ internal class RoomInventoryRepository(
     private val dao = db.inventoryDao()
 
     override val inventory: Flow<Inventory> =
-        db.invalidationTracker.createFlow("places", "items", "categories", "photos")
+        db.invalidationTracker.createFlow("places", "items", "categories", "photos", "labels")
             .conflate()
             .map { dao.snapshot().toInventory() }
 
@@ -93,6 +95,13 @@ internal class RoomInventoryRepository(
 
     override suspend fun deleteCategory(id: CategoryId) = dao.deleteCategory(id.value)
 
+    override suspend fun linkLabel(code: LabelCode, placeId: PlaceId) = db.withTransaction {
+        requireNotNull(dao.place(placeId.value)) { "Place not found" }
+        dao.upsertLabel(LabelEntity(code.value, placeId.value, now()))
+    }
+
+    override suspend fun unlinkLabel(code: LabelCode) = dao.deleteLabel(code.value)
+
     /** v1 keeps one photo per Item: replace whatever is there unless it's unchanged. */
     private suspend fun setItemPhoto(itemId: String, fileName: String?) {
         if (dao.itemPhotoFiles(itemId) == listOfNotNull(fileName)) return
@@ -132,5 +141,6 @@ internal fun Snapshot.toInventory(): Inventory {
             )
         },
         categories = categories.map { Category(CategoryId(it.id), it.name, it.color, it.createdAt, it.updatedAt) },
+        labels = labels.map { Label(LabelCode(it.code), PlaceId(it.placeId), it.createdAt) },
     )
 }

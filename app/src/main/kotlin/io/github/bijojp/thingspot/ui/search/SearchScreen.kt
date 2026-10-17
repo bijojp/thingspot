@@ -2,6 +2,7 @@ package io.github.bijojp.thingspot.ui.search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +31,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,6 +45,8 @@ import io.github.bijojp.thingspot.ui.ItemEditorRoute
 import io.github.bijojp.thingspot.ui.Navigator
 import io.github.bijojp.thingspot.ui.NewPlace
 import io.github.bijojp.thingspot.ui.PlaceRoute
+import io.github.bijojp.thingspot.ui.ScanRoute
+import io.github.bijojp.thingspot.ui.labels.rememberRequirePro
 import io.github.bijojp.thingspot.ui.components.BackupBanner
 import io.github.bijojp.thingspot.ui.components.EmptyHint
 import io.github.bijojp.thingspot.ui.components.ItemRow
@@ -61,6 +66,7 @@ fun SearchScreen(viewModel: InventoryViewModel, backups: BackupsViewModel, nav: 
     val backupStatus by backups.status.collectAsStateWithLifecycle()
     val pickBackupFolder = rememberBackupFolderPicker(backups)
     val pickBackupFile = rememberBackupFilePicker(backups)
+    val requirePro = rememberRequirePro()
     var query by rememberSaveable { mutableStateOf("") }
     var addingPlace by rememberSaveable { mutableStateOf(false) }
     val results = remember(inventory, query) { inventory.search(query) }
@@ -80,22 +86,32 @@ fun SearchScreen(viewModel: InventoryViewModel, backups: BackupsViewModel, nav: 
     ) { padding ->
         LazyColumn(Modifier.fillMaxSize(), contentPadding = padding) {
             item(key = "search") {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(onClick = { query = "" }) {
-                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.action_clear))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+                ) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                        trailingIcon = {
+                            if (query.isNotEmpty()) {
+                                IconButton(onClick = { query = "" }) {
+                                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.action_clear))
+                                }
                             }
+                        },
+                        placeholder = { Text(stringResource(R.string.search_hint)) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(28.dp),
+                        modifier = Modifier.weight(1f),
+                    )
+                    if (inventory.places.isNotEmpty()) {
+                        IconButton(onClick = { requirePro { nav.open(ScanRoute) } }) {
+                            Icon(painterResource(R.drawable.ic_qr_scan), contentDescription = stringResource(R.string.scan_title))
                         }
-                    },
-                    placeholder = { Text(stringResource(R.string.search_hint)) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(28.dp),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                )
+                    }
+                }
             }
             if (backupStatus.needsAttention && inventory.items.isNotEmpty()) {
                 item(key = "backup-banner") {

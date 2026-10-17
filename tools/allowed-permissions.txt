@@ -1,6 +1,8 @@
 # Every permission the F-Droid release APK may declare. tools/verify-fdroid-build.sh fails on
 # anything else, so a library can't quietly add one. Never add INTERNET (ADR 0001).
 #
+# The QR Label scanner, and the camera app when taking a photo. Asked for only when used.
+android.permission.CAMERA
 # WorkManager: run the daily Backup, and reschedule it after a reboot.
 android.permission.WAKE_LOCK
 android.permission.RECEIVE_BOOT_COMPLETED

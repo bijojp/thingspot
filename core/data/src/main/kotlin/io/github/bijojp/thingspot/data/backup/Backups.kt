@@ -9,6 +9,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.room.withTransaction
 import io.github.bijojp.thingspot.data.CategoryEntity
 import io.github.bijojp.thingspot.data.ItemEntity
+import io.github.bijojp.thingspot.data.LabelEntity
 import io.github.bijojp.thingspot.data.PhotoEntity
 import io.github.bijojp.thingspot.data.PhotoStore
 import io.github.bijojp.thingspot.data.PlaceEntity
@@ -269,6 +270,7 @@ class Backups internal constructor(
                 }
             }
             db.withTransaction {
+                dao.clearLabels()
                 dao.clearPhotos()
                 dao.clearItems()
                 dao.clearPlaces()
@@ -281,6 +283,7 @@ class Backups internal constructor(
                     dao.insertItem(ItemEntity(it.id, it.name, it.placeId, it.categoryId, it.notes, it.createdAt, it.updatedAt))
                 }
                 data.photos.forEach { dao.insertPhoto(PhotoEntity(it.id, it.itemId, it.placeId, it.fileName, it.createdAt)) }
+                data.labels.forEach { dao.upsertLabel(LabelEntity(it.code, it.placeId, it.createdAt)) }
             }
             File(appContext.cacheDir, "restore").deleteRecursively()
             prefs.edit { remove(FINGERPRINT) }
@@ -375,4 +378,5 @@ private fun Snapshot.toBackupData() = BackupData(
     items = items.map { BackupItem(it.id, it.name, it.placeId, it.categoryId, it.notes, it.createdAt, it.updatedAt) },
     categories = categories.map { BackupCategory(it.id, it.name, it.color, it.createdAt, it.updatedAt) },
     photos = photos.map { BackupPhoto(it.id, it.itemId, it.placeId, it.fileName, it.createdAt) },
+    labels = labels.map { BackupLabel(it.code, it.placeId, it.createdAt) },
 )

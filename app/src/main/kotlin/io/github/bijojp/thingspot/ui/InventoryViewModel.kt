@@ -12,6 +12,7 @@ import io.github.bijojp.thingspot.domain.Inventory
 import io.github.bijojp.thingspot.domain.InventoryRepository
 import io.github.bijojp.thingspot.domain.ItemFields
 import io.github.bijojp.thingspot.domain.ItemId
+import io.github.bijojp.thingspot.domain.LabelCode
 import io.github.bijojp.thingspot.domain.PlaceId
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -66,8 +67,8 @@ class InventoryViewModel(
         viewModelScope.launch { messageChannel.send(R.string.msg_no_camera) }
     }
 
-    fun addPlace(name: String, icon: String, parentId: PlaceId?, photo: String? = null) =
-        perform(R.string.msg_place_added) { repository.addPlace(name, icon, parentId, photo) }
+    fun addPlace(name: String, icon: String, parentId: PlaceId?, photo: String? = null, onAdded: (PlaceId) -> Unit = {}) =
+        perform(R.string.msg_place_added) { onAdded(repository.addPlace(name, icon, parentId, photo)) }
 
     fun addStarterPlaces(starter: NewPlace) = perform(R.string.msg_starter_added) { addTree(starter, parentId = null) }
 
@@ -97,6 +98,22 @@ class InventoryViewModel(
         perform(R.string.msg_saved) { repository.editCategory(id, name, color) }
 
     fun deleteCategory(id: CategoryId) = perform(R.string.msg_category_deleted) { repository.deleteCategory(id) }
+
+    fun linkLabel(code: LabelCode, placeId: PlaceId) = perform(R.string.msg_label_linked) { repository.linkLabel(code, placeId) }
+
+    fun unlinkLabel(code: LabelCode) = perform(R.string.msg_label_unlinked) { repository.unlinkLabel(code) }
+
+    /** Makes [count] fresh Label codes, links them to [placeId] (none for blank Labels), then [onReady]. */
+    fun prepareLabels(placeId: PlaceId?, count: Int, onReady: (List<LabelCode>) -> Unit) = perform(done = null) {
+        val current = inventory.value
+        val codes = generateSequence { LabelCode.random() }
+            .filter { current?.placeFor(it) == null }
+            .distinct()
+            .take(count)
+            .toList()
+        if (placeId != null) codes.forEach { repository.linkLabel(it, placeId) }
+        onReady(codes)
+    }
 
     private fun perform(@StringRes done: Int?, change: suspend () -> Unit) {
         viewModelScope.launch {

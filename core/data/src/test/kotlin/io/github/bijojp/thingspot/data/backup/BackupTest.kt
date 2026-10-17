@@ -70,6 +70,7 @@ class BackupTest {
         items = listOf(BackupItem("passport", "Passport", "box", "docs", "blue cover", 3, 3)),
         categories = listOf(BackupCategory("docs", "Documents", 0xFF5B9CF5, 4, 4)),
         photos = listOf(BackupPhoto("p1", itemId = "passport", fileName = "a1.jpg", createdAt = 5)),
+        labels = listOf(BackupLabel("K7Q3MX9P", "box", 6)),
     )
 
     @Test
@@ -115,6 +116,28 @@ class BackupTest {
         assertEquals("📦", checked.places.first { it.id == "a" }.icon)
         assertNull(checked.items.single().categoryId)
         assertEquals(listOf("p1"), checked.photos.map { it.id })
+    }
+
+    @Test
+    fun `Labels on missing Places or with bad codes are dropped`() {
+        val withLabels = data.copy(
+            labels = listOf(BackupLabel("K7Q3MX9P", "box", 1), BackupLabel("AAAA2222", "gone", 1), BackupLabel("bad", "box", 1)),
+        )
+        assertEquals(listOf("K7Q3MX9P"), BackupFormat.checked(withLabels, setOf("a1.jpg")).labels.map { it.code })
+    }
+
+    @Test
+    fun `a backup written before Labels existed still loads`() {
+        val zip = temp.newFile("old.zip")
+        java.util.zip.ZipOutputStream(zip.outputStream()).use { out ->
+            out.putNextEntry(java.util.zip.ZipEntry("manifest.json"))
+            out.write("""{"format":"thingspot-backup","formatVersion":1,"appVersion":"0.1.0","createdAt":1,"places":1,"items":0,"categories":0,"photos":0}""".toByteArray())
+            out.putNextEntry(java.util.zip.ZipEntry("data.json"))
+            out.write("""{"places":[{"id":"home","name":"Home","icon":"🏠","createdAt":1,"updatedAt":1}],"items":[],"categories":[],"photos":[]}""".toByteArray())
+        }
+        val contents = BackupFormat.read(zip)
+        assertEquals(listOf("home"), contents.data.places.map { it.id })
+        assertTrue(contents.data.labels.isEmpty())
     }
 
     @Test

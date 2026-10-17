@@ -19,6 +19,7 @@
     <string name="action_add_place_inside">Place inside</string>
     <string name="action_choose_place">Choose a Place</string>
     <string name="action_open">Open</string>
+    <string name="action_ok">OK</string>
     <string name="field_name">Name</string>
     <string name="field_icon">Icon</string>
     <string name="field_colour">Colour</string>
@@ -44,8 +45,10 @@
     <string name="msg_item_added">Item added</string>
     <string name="msg_item_deleted">Item deleted</string>
     <string name="msg_category_deleted">Category deleted</string>
+    <string name="msg_label_linked">Label linked</string>
+    <string name="msg_label_unlinked">Label unlinked</string>
     <string name="msg_photo_failed">Couldn’t use that photo</string>
-    <string name="msg_no_camera">No camera app found</string>
+    <string name="msg_no_camera">The camera isn’t available</string>
     <string name="msg_backups_on">Backups are on. First backup saved.</string>
     <string name="msg_backed_up">Backed up</string>
     <string name="msg_backup_failed">Backup failed. Check the backup folder in Settings.</string>
@@ -90,6 +93,8 @@
     <string name="place_action_edit">Rename or change icon</string>
     <string name="place_action_move">Move</string>
     <string name="place_action_delete">Delete</string>
+    <string name="place_action_print_labels">Print Labels</string>
+    <string name="place_section_labels">Labels</string>
     <string name="place_move_title">Move “%1$s” into…</string>
     <string name="place_delete_title">Delete “%1$s”?</string>
     <string name="place_delete_empty">It’s empty, so nothing else changes.</string>
@@ -114,6 +119,37 @@
         <item quantity="one">%1$d Item is here, and there’s no other Place to move it to. Add another Place first.</item>
         <item quantity="other">%1$d Items are here, and there’s no other Place to move them to. Add another Place first.</item>
     </plurals>
+
+    <plurals name="place_delete_labels">
+        <item quantity="one">Its Label becomes blank, ready to reuse.</item>
+        <item quantity="other">Its %1$d Labels become blank, ready to reuse.</item>
+    </plurals>
+
+    <!-- Labels -->
+    <string name="scan_title">Scan a Label</string>
+    <string name="scan_hint">Point the camera at a ThingSpot Label</string>
+    <string name="scan_not_a_label">That code isn’t a ThingSpot Label</string>
+    <string name="scan_needs_camera">Scanning Labels needs the camera. ThingSpot reads the code on your phone and keeps nothing.</string>
+    <string name="scan_allow_camera">Allow camera</string>
+    <string name="label_blank_title">New Label %1$s</string>
+    <string name="label_blank_body">This Label isn’t on a Place yet. Stick it on a box, bin or drawer, then:</string>
+    <string name="label_blank_new_place">Make a new Place for it</string>
+    <string name="label_blank_existing">Put it on an existing Place</string>
+    <string name="label_link_title">Put the Label on…</string>
+    <string name="label_new_place_parent">Where is the new Place?</string>
+    <string name="label_blank_action">Blank Labels</string>
+    <string name="label_print_title">Labels for “%1$s”</string>
+    <string name="label_print_body">How many? Stick one on each side you might see.</string>
+    <string name="label_print_blank_title">Print blank Labels</string>
+    <string name="label_print_blank_body">Stick them on boxes as you pack, then scan each one to say what it is.</string>
+    <string name="label_print_paper">Plain paper works (cut along the dashed lines); 63.5 × 38.1 mm sticker sheets fit 21 to an A4 page.</string>
+    <string name="label_print_action">Print</string>
+    <string name="label_print_job">ThingSpot Labels</string>
+    <string name="label_unlink">Unlink</string>
+    <string name="label_unlink_title">Unlink Label %1$s?</string>
+    <string name="label_unlink_body">The Label becomes blank. Scanning it will ask where it goes again.</string>
+    <string name="pro_title">QR Labels are part of Pro</string>
+    <string name="pro_body">ThingSpot Pro is a one-time purchase that pays for development. It’s coming to this version soon. Everything else, including backups, stays free forever.</string>
 
     <!-- Place picker -->
     <string name="picker_filter_hint">Filter Places</string>

@@ -12,14 +12,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,11 +32,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.bijojp.thingspot.R
+import io.github.bijojp.thingspot.domain.LabelCode
 import io.github.bijojp.thingspot.domain.PlaceId
 import io.github.bijojp.thingspot.ui.BackupsViewModel
 import io.github.bijojp.thingspot.ui.InventoryViewModel
@@ -50,10 +55,12 @@ import io.github.bijojp.thingspot.ui.components.PlaceRow
 import io.github.bijojp.thingspot.ui.components.SectionHeader
 import io.github.bijojp.thingspot.ui.components.TabScaffold
 import io.github.bijojp.thingspot.ui.components.rememberBackupFilePicker
+import io.github.bijojp.thingspot.ui.labels.PrintLabelsDialog
+import io.github.bijojp.thingspot.ui.labels.rememberRequirePro
 import io.github.bijojp.thingspot.ui.search.FirstRunCard
 import io.github.bijojp.thingspot.ui.search.starterPlaces
 
-private enum class PlaceDialog { None, AddInside, Edit, Move, Delete }
+private enum class PlaceDialog { None, AddInside, Edit, Move, Delete, PrintLabels }
 
 /** What's inside a Place, or the top-level Places when [placeId] is null (the Places tab). */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +79,8 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, backups: Backu
     val items = placeId?.let(inventory::itemsIn).orEmpty()
     val starter = starterPlaces()
     val pickBackupFile = rememberBackupFilePicker(backups)
+    val requirePro = rememberRequirePro()
+    var unlinking by rememberSaveable { mutableStateOf<String?>(null) }
 
     TabScaffold(
         nav = nav,
@@ -104,6 +113,11 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, backups: Backu
                     }
                 },
                 actions = {
+                    if (place == null && inventory.places.isNotEmpty()) {
+                        TextButton(onClick = { requirePro { dialog = PlaceDialog.PrintLabels } }) {
+                            Text(stringResource(R.string.label_blank_action))
+                        }
+                    }
                     if (place != null) {
                         IconButton(onClick = { menuOpen = true }) {
                             Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.action_more))
@@ -116,6 +130,13 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, backups: Backu
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.place_action_move)) },
                                 onClick = { menuOpen = false; dialog = PlaceDialog.Move },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.place_action_print_labels)) },
+                                onClick = {
+                                    menuOpen = false
+                                    requirePro { dialog = PlaceDialog.PrintLabels }
+                                },
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.place_action_delete), color = MaterialTheme.colorScheme.error) },
@@ -181,13 +202,42 @@ fun PlaceScreen(placeId: PlaceId?, viewModel: InventoryViewModel, backups: Backu
                 items(items, key = { "item:${it.id.value}" }) { item ->
                     ItemRow(item, inventory, onClick = { nav.open(ItemEditorRoute(itemId = item.id.value)) }, showPath = false)
                 }
+                val labels = inventory.labelsOn(place.id)
+                if (labels.isNotEmpty()) {
+                    item(key = "labels-header") { SectionHeader(stringResource(R.string.place_section_labels)) }
+                    items(labels, key = { "label:${it.code.value}" }) { label ->
+                        ListItem(
+                            headlineContent = { Text(label.code.display) },
+                            leadingContent = { Icon(painterResource(R.drawable.ic_qr_scan), contentDescription = null) },
+                            trailingContent = {
+                                TextButton(onClick = { unlinking = label.code.value }) { Text(stringResource(R.string.label_unlink)) }
+                            },
+                        )
+                    }
+                }
             }
             item(key = "fab-space") { Spacer(Modifier.height(if (place == null) 88.dp else 152.dp)) }
         }
     }
 
+    unlinking?.let { code ->
+        AlertDialog(
+            onDismissRequest = { unlinking = null },
+            title = { Text(stringResource(R.string.label_unlink_title, LabelCode(code).display)) },
+            text = { Text(stringResource(R.string.label_unlink_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.unlinkLabel(LabelCode(code))
+                    unlinking = null
+                }) { Text(stringResource(R.string.label_unlink)) }
+            },
+            dismissButton = { TextButton(onClick = { unlinking = null }) { Text(stringResource(R.string.action_cancel)) } },
+        )
+    }
+
     when (dialog) {
         PlaceDialog.None -> Unit
+        PlaceDialog.PrintLabels -> PrintLabelsDialog(place = place, viewModel = viewModel, onDismiss = { dialog = PlaceDialog.None })
         PlaceDialog.AddInside -> PlaceEditorDialog(
             initial = null,
             viewModel = viewModel,
